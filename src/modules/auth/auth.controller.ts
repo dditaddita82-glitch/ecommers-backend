@@ -9,10 +9,12 @@ import {
   getMeService,
 } from './auth.service';
 
+const isProd = process.env.NODE_ENV === 'production' || !process.env.DATABASE_URL?.includes('localhost');
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: isProd,
+  sameSite: isProd ? ('none' as const) : ('lax' as const),
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari dalam ms
 };
 
