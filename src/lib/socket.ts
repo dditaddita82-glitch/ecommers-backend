@@ -6,9 +6,27 @@ import { Server as SocketIOServer } from 'socket.io';
 let io: SocketIOServer;
 
 export function initSocket(server: HttpServer): void {
+  const allowedOrigins = [
+    'http://localhost:3000', 
+    'http://localhost:3001', 
+    'http://localhost:3002'
+  ];
+
+  if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+  }
+
   io = new SocketIOServer(server, {
     cors: {
-      origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
+        if (isAllowed) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },
