@@ -19,7 +19,8 @@ export const registerSchema = z.object({
   phoneNumber: z
     .string()
     .regex(/^(\+62|08)\d{8,11}$/, 'Format nomor telepon tidak valid')
-    .optional(),
+    .optional()
+    .or(z.literal('')),
 });
 
 export const loginSchema = z.object({
